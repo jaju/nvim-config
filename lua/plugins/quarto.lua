@@ -7,17 +7,51 @@ return {
     opts = {
       lspFeatures = {
         enabled = true,
-        chunks = 'curly',
+        languages = {
+          'python',
+          'clojure',
+          'markdown',
+          'quarto',
+          'bash',
+          'html',
+          'css',
+          'javascript',
+          'typescript',
+        },
+        chunks = 'all', -- 'curly', 'all'
+        diagnostics = {
+          enabled = true,
+          onChange = true,
+          debounce = 100,
+          triggers = { 'BufWritePost' },
+        },
+        completion = {
+          enabled = true,
+          autoTrigger = true,
+          showPreviews = true,
+        },
       },
       codeRunner = {
         enabled = true,
-        default_method = 'slime',
+        default_method = 'molten', -- 'molten', 'slime', 'iron', or <function>
+      },
+      keymap = {
+        ['<leader>q'] = {
+          name = 'Quarto',
+          r = { '<cmd>QuartoRender<cr>', 'Render' },
+          p = { '<cmd>QuartoPreview<cr>', 'Preview' },
+          i = { '<cmd>QuartoInsertCodeChunk<cr>', 'Insert Code Chunk' },
+          c = { '<cmd>QuartoCloseOutput<cr>', 'Close Output' },
+          o = { '<cmd>QuartoOpenOutput<cr>', 'Open Output' },
+          d = { '<cmd>QuartoDiagnostics<cr>', 'Diagnostics' },
+        },
       },
     },
     dependencies = {
       -- for language features in code cells
       -- configured in lua/plugins/lsp.lua
       'jmbuhr/otter.nvim',
+      'nvim-treesitter/nvim-treesitter',
     },
   },
 
@@ -44,6 +78,7 @@ return {
     -- like ipython, R, bash
     'jpalardy/vim-slime',
     dev = false,
+    enabled = false,
     init = function()
       vim.b['quarto_is_python_chunk'] = false
       Quarto_is_in_python_chunk = function()
@@ -87,6 +122,17 @@ return {
       vim.keymap.set('n', '<leader>cm', mark_terminal, { desc = '[m]ark terminal' })
       vim.keymap.set('n', '<leader>cs', set_terminal, { desc = '[s]et terminal' })
     end,
+  },
+
+  {
+    'Olical/conjure',
+    dependencies = {
+      'hrsh7th/nvim-cmp',
+      'PaterJason/cmp-conjure',
+    },
+    keys = {
+      { '<C-c><C-c>', ':ConjureEvalRootForm<cr>', desc = 'Eval root form' },
+    },
   },
 
   { -- paste an image from the clipboard or drag-and-drop
@@ -133,6 +179,9 @@ return {
     enabled = true,
     version = '^1.0.0', -- use version <2.0.0 to avoid breaking changes
     build = ':UpdateRemotePlugins',
+    dependencies = {
+      '3rd/image.nvim',
+    },
     init = function()
       vim.g.molten_image_provider = 'image.nvim'
       -- vim.g.molten_output_win_max_height = 20
@@ -148,7 +197,7 @@ return {
       end
       local deinit = function()
         local quarto_cfg = require('quarto.config').config
-        quarto_cfg.codeRunner.default_method = 'slime'
+        quarto_cfg.codeRunner.default_method = 'conjure'
         vim.cmd [[MoltenDeinit]]
       end
       vim.keymap.set('n', '<localleader>mi', init, { silent = true, desc = 'Initialize molten' })

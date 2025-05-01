@@ -30,7 +30,8 @@ nmap('gV', '`[v`]')
 cmap('<C-a>', '<Home>')
 
 -- save with ctrl+s
-imap('<C-s>', '<esc>:update<cr><esc>')
+-- imap('<C-s>', '<esc>:update<cr><esc>')
+imap('<C-s>', '<C-o>:update<cr>') -- save without leaving insert mode
 nmap('<C-s>', '<cmd>:update<cr><esc>')
 
 -- Move between windows using <ctrl> direction
@@ -265,6 +266,8 @@ wk.add({
     { '<m-I>', insert_py_chunk, desc = 'python code chunk' },
     { '<m-i>', insert_r_chunk, desc = 'r code chunk' },
     { '<m-m>', ' |>', desc = 'pipe' },
+    { '<C-a>', '<C-o>^', desc = "Move to beginning of line" },
+    { '<C-e>', '<C-o>$', desc = "Move to end of line" },
   },
 }, { mode = 'i' })
 
@@ -330,10 +333,8 @@ wk.add({
     { '<leader><cr>', send_cell, desc = 'run code cell' },
     { '<leader>c', group = '[c]ode / [c]ell / [c]hunk' },
     { '<leader>ci', new_terminal_ipython, desc = 'new [i]python terminal' },
-    { '<leader>cj', new_terminal_julia, desc = 'new [j]ulia terminal' },
     { '<leader>cn', new_terminal_shell, desc = '[n]ew terminal with shell' },
     { '<leader>cp', new_terminal_python, desc = 'new [p]ython terminal' },
-    { '<leader>cr', new_terminal_r, desc = 'new [R] terminal' },
     { '<leader>d', group = '[d]ebug' },
     { '<leader>dt', group = '[t]est' },
     { '<leader>e', group = '[e]dit' },
@@ -433,3 +434,5 @@ wk.add({
     { '<leader>xx', ':w<cr>:source %<cr>', desc = '[x] source %' },
   },
 }, { mode = 'n' })
+
+

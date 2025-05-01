@@ -120,7 +120,7 @@ return {
   { -- LLMs
     'olimorris/codecompanion.nvim',
     version = '*',
-    enabled = true,
+    enabled = false,
     dependencies = {
       'nvim-lua/plenary.nvim',
       'nvim-treesitter/nvim-treesitter',

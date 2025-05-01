@@ -23,7 +23,7 @@ require('lazy').setup('plugins', {
   },
   install = {
     missing = true,
-    colorscheme = { 'default' },
+    colorscheme = { 'nightly' },
   },
   checker = { enabled = false },
   rtp = {

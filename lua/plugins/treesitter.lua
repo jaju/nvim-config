@@ -13,7 +13,6 @@ return {
       require('nvim-treesitter.configs').setup {
         auto_install = true,
         ensure_installed = {
-          'r',
           'python',
           'markdown',
           'markdown_inline',
@@ -85,4 +84,25 @@ return {
       }
     end,
   },
+  {
+    'stevearc/aerial.nvim',
+    cmd = { "AerialToggle", "AerialOpen" },
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+      'nvim-tree/nvim-web-devicons',
+    },
+    opts = {
+      backends = { 'treesitter', 'lsp', 'markdown', 'man' },
+      layout = {
+        max_width = { 40, 0.2 },
+        min_width = 20,
+        default_direction = 'prefer_right',
+        placement = 'window',
+      },
+    },
+    keys = {
+      { '<leader>ao', '<cmd>AerialToggle<cr>', desc = 'Aerial Toggle' },
+      { '<leader>an', '<cmd>AerialNavToggle<cr>', desc = 'Aerial Code Toggle' },
+    },
+  }
 }

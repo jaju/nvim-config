@@ -277,6 +277,29 @@ return {
         diagnostics = {
           enable = true,
         },
+        view = {
+          width = 35,
+          relativenumber = true,
+        },
+        filters = {
+          dotfiles = false,
+          custom = { '.DS_Store', '.idea$', '.vscode', '.cache', '^target$', '__pycache__', 'CmakeFiles', 'CMakeCache.txt', '*.iml', '*.cmake', '.github', '*.a', '*.dylib', '*.jar', '.git', 'node_modules', '_site', '_freeze' },
+        },
+        renderer = {
+          highlight_git = true,
+          highlight_opened_files = 'all',
+          root_folder_modifier = ':t',
+          indent_markers = {
+            enable = true,
+            inline_arrows = true,
+            icons = {
+              corner = '└ ',
+              edge = '│ ',
+              item = '│ ',
+              none = '  ',
+            },
+          },
+        },
       }
     end,
   },

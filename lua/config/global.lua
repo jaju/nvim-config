@@ -10,6 +10,7 @@ vim.opt.termguicolors = true
 
 -- show insert mode in terminal buffers
 vim.api.nvim_set_hl(0, 'TermCursor', { fg = '#A6E3A1', bg = '#A6E3A1' })
+vim.api.nvim_set_hl(0, 'WinSeperator', {fg = 'dimgray', bg = ''})
 
 -- disable fill chars (the ~ after the buffer)
 vim.o.fillchars = 'eob: '

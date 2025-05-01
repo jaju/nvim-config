@@ -22,3 +22,8 @@ require 'config.redir'
 vim.cmd.colorscheme 'rusty'
 vim.api.nvim_set_hl(0, 'TermCursor', { fg = '#A6E3A1', bg = '#A6E3A1' })
 vim.api.nvim_set_hl(0, 'WinSeparator', { fg = 'dimgray', bg = '' })
+
+-- local U = require('config.utils')
+-- U.imap('C-a', '<C-o>^', {desc = 'Move to beginning of line'})
+-- U.imap('C-e', '<C-o>$', {desc = 'Move to end of line'})
+
