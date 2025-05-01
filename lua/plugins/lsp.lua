@@ -115,18 +115,18 @@ return {
         root_dir = util.root_pattern('.git', '.marksman.toml', '_quarto.yml'),
       }
 
-      lspconfig.r_language_server.setup {
-        capabilities = capabilities,
-        flags = lsp_flags,
-        filetypes = { 'r', 'rmd', 'rmarkdown' }, -- not directly using it for quarto (as that is handled by otter and often contains more languanges than just R)
-        settings = {
-          r = {
-            lsp = {
-              rich_documentation = true,
-            },
-          },
-        },
-      }
+      -- lspconfig.r_language_server.setup {
+      --   capabilities = capabilities,
+      --   flags = lsp_flags,
+      --   filetypes = { 'r', 'rmd', 'rmarkdown' }, -- not directly using it for quarto (as that is handled by otter and often contains more languanges than just R)
+      --   settings = {
+      --     r = {
+      --       lsp = {
+      --         rich_documentation = true,
+      --       },
+      --     },
+      --   },
+      -- }
 
       lspconfig.cssls.setup {
         capabilities = capabilities,

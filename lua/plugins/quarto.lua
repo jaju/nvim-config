@@ -126,13 +126,14 @@ return {
 
   {
     'Olical/conjure',
+    lazy = false,
     dependencies = {
       'hrsh7th/nvim-cmp',
       'PaterJason/cmp-conjure',
     },
-    keys = {
-      { '<C-c><C-c>', ':ConjureEvalRootForm<cr>', desc = 'Eval root form' },
-    },
+    -- keys = {
+    --   { '<C-c><C-c>', ':ConjureEvalRootForm<cr>', desc = 'Eval root form' },
+    -- },
   },
 
   { -- paste an image from the clipboard or drag-and-drop

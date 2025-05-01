@@ -4,30 +4,54 @@ local ms = vim.lsp.protocol.Methods
 
 P = vim.print
 
-vim.g['quarto_is_r_mode'] = nil
-vim.g['reticulate_running'] = false
+local function map(m, k, v, opts)
+  opts = opts or {}
+  opts.silent = true
+  opts.noremap = true
+  vim.keymap.set(m, k, v, opts)
+end
 
 local nmap = function(key, effect, desc)
-  vim.keymap.set('n', key, effect, { silent = true, noremap = true, desc = desc })
+  map('n', key, effect, { silent = true, noremap = true, desc = desc })
 end
 
 local vmap = function(key, effect, desc)
-  vim.keymap.set('v', key, effect, { silent = true, noremap = true, desc = desc })
+  map('v', key, effect, { silent = true, noremap = true, desc = desc })
 end
 
 local imap = function(key, effect, desc)
-  vim.keymap.set('i', key, effect, { silent = true, noremap = true, desc = desc })
+  map('i', key, effect, { silent = true, noremap = true, desc = desc })
 end
 
 local cmap = function(key, effect, desc)
-  vim.keymap.set('c', key, effect, { silent = true, noremap = true, desc = desc })
+  map('c', key, effect, { silent = true, noremap = true, desc = desc })
 end
+
+local function set_ft_keymaps(filetype, mappings)
+  vim.api.nvim_create_autocmd('FileType', {
+    pattern = filetype,
+    callback = function()
+      for _, mapping in ipairs(mappings) do
+        local mode, key, effect, desc = unpack(mapping)
+        mode = mode or {'n', 'i'}
+        vim.keymap.set(mode, key, effect, { desc = desc })
+      end
+    end,
+  })
+end
+
+set_ft_keymaps({'clojure', 'python', 'sh'}, {
+  {{'n', 'i'}, '<c-c><c-c>', ':ConjureEvalRootForm<cr>', 'Eval root form'},
+  {{'n', 'i'}, '<c-c><c-w>', ':ConjureEvalWord<cr>', 'Eval word'},
+  {{'n', 'i'}, '<c-c><c-l>', ':ConjureEval<cr>', 'Eval line'},
+})
+
+set_ft_keymaps('quarto', {
+  {{'n', 'i'}, '<c-c><c-c>', ':QuartoSend<cr>', 'Quarto send'},
+})
 
 -- select last paste
 nmap('gV', '`[v`]')
-
--- move in command line
-cmap('<C-a>', '<Home>')
 
 -- save with ctrl+s
 -- imap('<C-s>', '<esc>:update<cr><esc>')
@@ -53,13 +77,6 @@ imap(';', ';<c-g>u')
 
 nmap('Q', '<Nop>')
 
---- Send code to terminal with vim-slime
---- If an R terminal has been opend, this is in r_mode
---- and will handle python code via reticulate when sent
---- from a python chunk.
---- TODO: incorpoarate this into quarto-nvim plugin
---- such that QuartoSend functions get the same capabilities
---- TODO: figure out bracketed paste for reticulate python repl.
 local function send_cell()
   local has_molten, molten_status = pcall(require, 'molten.status')
   local molten_works = false
@@ -74,52 +91,10 @@ local function send_cell()
     vim.cmd.QuartoSend()
     return
   end
-
-  if vim.b['quarto_is_r_mode'] == nil then
-    vim.fn['slime#send_cell']()
-    return
-  end
-  if vim.b['quarto_is_r_mode'] == true then
-    vim.g.slime_python_ipython = 0
-    local is_python = require('otter.tools.functions').is_otter_language_context 'python'
-    if is_python and not vim.b['reticulate_running'] then
-      vim.fn['slime#send']('reticulate::repl_python()' .. '\r')
-      vim.b['reticulate_running'] = true
-    end
-    if not is_python and vim.b['reticulate_running'] then
-      vim.fn['slime#send']('exit' .. '\r')
-      vim.b['reticulate_running'] = false
-    end
-    vim.fn['slime#send_cell']()
-  end
 end
 
---- Send code to terminal with vim-slime
---- If an R terminal has been opend, this is in r_mode
---- and will handle python code via reticulate when sent
---- from a python chunk.
-local slime_send_region_cmd = ':<C-u>call slime#send_op(visualmode(), 1)<CR>'
-slime_send_region_cmd = vim.api.nvim_replace_termcodes(slime_send_region_cmd, true, false, true)
-local function send_region()
-  -- if filetyps is not quarto, just send_region
-  if vim.bo.filetype ~= 'quarto' or vim.b['quarto_is_r_mode'] == nil then
-    vim.cmd('normal' .. slime_send_region_cmd)
-    return
-  end
-  if vim.b['quarto_is_r_mode'] == true then
-    vim.g.slime_python_ipython = 0
-    local is_python = require('otter.tools.functions').is_otter_language_context 'python'
-    if is_python and not vim.b['reticulate_running'] then
-      vim.fn['slime#send']('reticulate::repl_python()' .. '\r')
-      vim.b['reticulate_running'] = true
-    end
-    if not is_python and vim.b['reticulate_running'] then
-      vim.fn['slime#send']('exit' .. '\r')
-      vim.b['reticulate_running'] = false
-    end
-    vim.cmd('normal' .. slime_send_region_cmd)
-  end
-end
+-- Example use of otter to check if we are in a python chunk
+-- local is_python = require('otter.tools.functions').is_otter_language_context 'python'
 
 -- send code with ctrl+Enter
 -- just like in e.g. RStudio
@@ -216,7 +191,11 @@ local insert_ojs_chunk = function()
   insert_code_chunk 'ojs'
 end
 
---show kepbindings with whichkey
+local insert_clojure_chunk = function()
+  insert_code_chunk 'clojure'
+end
+
+--show keybindings with whichkey
 --add your own here if you want them to
 --show up in the popup as well
 
@@ -224,10 +203,9 @@ end
 wk.add({
   { '<c-LeftMouse>', '<cmd>lua vim.lsp.buf.definition()<CR>', desc = 'go to definition' },
   { '<c-q>', '<cmd>q<cr>', desc = 'close buffer' },
-  { '<cm-i>', insert_py_chunk, desc = 'python code chunk' },
   { '<esc>', '<cmd>noh<cr>', desc = 'remove search highlight' },
-  { '<m-I>', insert_py_chunk, desc = 'python code chunk' },
-  { '<m-i>', insert_r_chunk, desc = 'r code chunk' },
+  { '<m-p>', insert_py_chunk, desc = 'python code chunk' },
+  { '<m-c>', insert_clojure_chunk, desc = 'clojure code chunk' },
   { '[q', ':silent cprev<cr>', desc = '[q]uickfix prev' },
   { ']q', ':silent cnext<cr>', desc = '[q]uickfix next' },
   { 'gN', 'Nzzzv', desc = 'center search' },
@@ -261,11 +239,9 @@ wk.add({
   {
     mode = { 'i' },
     { '<c-x><c-x>', '<c-x><c-o>', desc = 'omnifunc completion' },
-    { '<cm-i>', insert_py_chunk, desc = 'python code chunk' },
     { '<m-->', ' <- ', desc = 'assign' },
-    { '<m-I>', insert_py_chunk, desc = 'python code chunk' },
-    { '<m-i>', insert_r_chunk, desc = 'r code chunk' },
-    { '<m-m>', ' |>', desc = 'pipe' },
+    { '<m-i>', insert_py_chunk, desc = 'python code chunk' },
+    { '<m-c>', insert_clojure_chunk, desc = 'python code chunk' },
     { '<C-a>', '<C-o>^', desc = "Move to beginning of line" },
     { '<C-e>', '<C-o>$', desc = "Move to end of line" },
   },
@@ -422,7 +398,6 @@ wk.add({
     { '<leader>qrb', ':QuartoSendBelow<cr>', desc = 'run [b]elow' },
     { '<leader>qrr', ':QuartoSendAbove<cr>', desc = 'to cu[r]sor' },
     { '<leader>r', group = '[r] R specific tools' },
-    { '<leader>rt', show_r_table, desc = 'show [t]able' },
     { '<leader>v', group = '[v]im' },
     { '<leader>vc', ':Telescope colorscheme<cr>', desc = '[c]olortheme' },
     { '<leader>vh', ':execute "h " . expand("<cword>")<cr>', desc = 'vim [h]elp for current word' },
@@ -434,5 +409,3 @@ wk.add({
     { '<leader>xx', ':w<cr>:source %<cr>', desc = '[x] source %' },
   },
 }, { mode = 'n' })
-
-
