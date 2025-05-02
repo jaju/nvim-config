@@ -137,3 +137,6 @@ vim.filetype.add {
 -- additional builtin vim packages
 -- filter quickfix list with Cfilter
 vim.cmd.packadd 'cfilter'
+
+-- LLMs for completions
+vim.g.copilot_model = 'gemini-2.5-pro'

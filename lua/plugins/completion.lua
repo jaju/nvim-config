@@ -70,6 +70,9 @@ return {
           },
           symbols = { name = 'symbols', module = 'blink.compat.source' },
         },
+        per_filetype = {
+          codecompanion = { "codecompanion" },
+        },
       },
       appearance = {
         -- Sets the fallback highlight groups to nvim-cmp's highlight groups
@@ -120,15 +123,12 @@ return {
   { -- LLMs
     'olimorris/codecompanion.nvim',
     version = '*',
-    enabled = false,
+    disabled = false,
+    lazy = false,
     dependencies = {
       'nvim-lua/plenary.nvim',
       'nvim-treesitter/nvim-treesitter',
       'nvim-telescope/telescope.nvim',
-    },
-    keys = {
-      { '<leader>ac', ':CodeCompanionChat Toggle<cr>', desc = '[a]i [c]hat' },
-      { '<leader>aa', ':CodeCompanionActions<cr>', desc = '[a]i [a]actions' },
     },
     config = function()
       require('codecompanion').setup {
@@ -136,6 +136,36 @@ return {
           diff = {
             enabled = true,
           },
+        },
+        adapters = {
+          copilot = function()
+            local copilot_model = vim.g.copilot_model or 'gpt-4.1'
+            return require('codecompanion.adapters').extend('copilot', {
+              schema = {
+                model = {
+                  -- default = 'gemini-2.5-pro',
+                  default = copilot_model,
+                  -- default = 'gpt-4.0',
+                  -- default = 'gpt-3.5-turbo',
+                  -- default = 'gpt-3.5-turbo-16k',
+                  -- default = 'gpt-3.5-turbo-32k',
+                  -- default = 'gpt-4-turbo',
+                  -- default = 'gpt-4-turbo-16k',
+                  -- default = 'gpt-4-turbo-32k',
+                },
+              },
+            })
+          end,
+          ollama = function()
+            local ollama_model = vim.g.ollama_model or 'gemma3:27b'
+            return require('codecompanion.adapters').extend('ollama', {
+              schema = {
+                model = {
+                  default = ollama_model,
+                },
+              },
+            })
+          end,
         },
         strategies = {
           chat = {
@@ -157,23 +187,23 @@ return {
 
   { 
     'github/copilot.vim',
-    disabled = true,
   }, 
+  --
+  -- {
+  --   'CopilotC-Nvim/CopilotChat.nvim',
+  --   disabled = true,
+  --   dependencies = {
+  --     { 'github/copilot.vim' },
+  --     { 'nvim-lua/plenary.nvim', branch = 'master' },
+  --   },
+  --   opts = {
+  --     model = 'gpt-4.1',
+  --     agent = 'copilot',
+  --     window = {
+  --       layout = 'vertical',
+  --       border = 'rounded',
+  --     }
+  --   }
+  -- },
 
-  {
-    'CopilotC-Nvim/CopilotChat.nvim',
-    disabled = false,
-    dependencies = {
-      { 'github/copilot.vim' },
-      { 'nvim-lua/plenary.nvim', branch = 'master' },
-    },
-    opts = {
-      model = 'gpt-4.1',
-      agent = 'copilot',
-      window = {
-        layout = 'vertical',
-        border = 'rounded',
-      }
-    }
-  },
 }

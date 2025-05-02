@@ -5,7 +5,6 @@ local function map(m, k, v, opts)
   vim.keymap.set(m, k, v, opts)
 end
 
-
 local function nmap(k, v, opts)
   map('n', k, v, opts)
 end

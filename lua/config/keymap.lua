@@ -74,6 +74,15 @@ local function send_cell()
   end
 end
 
+
+local function send_region()
+  if vim.bo.filetype ~= 'quarto' then
+    vim.cmd[[ConjureEvalVisual]]
+  else
+    vim.cmd[[QuartoSend]]
+  end
+end
+
 -- Example use of otter to check if we are in a python chunk
 -- local is_python = require('otter.tools.functions').is_otter_language_context 'python'
 
@@ -148,20 +157,12 @@ local insert_code_chunk = function(lang)
   vim.api.nvim_feedkeys(keys, 'n', false)
 end
 
-local insert_r_chunk = function()
-  insert_code_chunk 'r'
-end
-
 local insert_py_chunk = function()
   insert_code_chunk 'python'
 end
 
 local insert_lua_chunk = function()
   insert_code_chunk 'lua'
-end
-
-local insert_julia_chunk = function()
-  insert_code_chunk 'julia'
 end
 
 local insert_bash_chunk = function()
@@ -204,7 +205,12 @@ wk.add {
     { '<M-j>', ":m'>+<cr>`<my`>mzgv`yo`z", desc = 'move line down' },
     { '<M-k>', ":m'<-2<cr>`>my`<mzgv`yo`z", desc = 'move line up' },
     { '<cr>', send_region, desc = 'run code region' },
-    { 'q', ':norm @q<cr>', desc = 'repat q macro' },
+    { 'q', ':norm @q<cr>', desc = 'repeat q macro' },
+
+    -- c-group
+    { '<leader>c', group = '[c]odecompanion' },
+    { '<leader>ce', ':CodeCompanion /explain<cr>', desc = 'code companion [e]xplain' },
+    { '<leader>cl', ':CodeCompanion /lsp<cr>', desc = 'code companion explain [l]sp' },
   },
 }
 
@@ -232,19 +238,11 @@ local function new_terminal(lang)
 end
 
 local function new_terminal_python()
-  new_terminal 'python'
+  new_terminal 'python3'
 end
 
-local function new_terminal_r()
-  new_terminal 'R --no-save'
-end
-
-local function new_terminal_ipython()
-  new_terminal 'ipython --no-confirm-exit'
-end
-
-local function new_terminal_julia()
-  new_terminal 'julia'
+local function new_terminal_clojure()
+  new_terminal 'clojure'
 end
 
 local function new_terminal_shell()
@@ -286,16 +284,22 @@ end
 -- normal mode with <leader>
 wk.add({
   {
-    { '<leader><cr>', send_cell, desc = 'run code cell' },
-    { '<leader>c', group = '[c]ode / [c]ell / [c]hunk' },
-    { '<leader>ci', new_terminal_ipython, desc = 'new [i]python terminal' },
-    { '<leader>cn', new_terminal_shell, desc = '[n]ew terminal with shell' },
-    { '<leader>cp', new_terminal_python, desc = 'new [p]ython terminal' },
+    -- t-group
+    { '<leader>t', group = '[t]erminal' },
+    { '<leader>tn', new_terminal_shell, desc = '[n]ew terminal with shell' },
+    { '<leader>tp', new_terminal_python, desc = 'new [p]ython terminal' },
+    { '<leader>tc', new_terminal_clojure, desc = 'new [c]lojure terminal' },
+
+    -- c-group
+    { '<leader>c', group = '[c]odecompanion' },
+    { '<leader>cc', ':CodeCompanionChat Toggle<cr>', desc = 'codecompanion [c]hat' },
+    { '<leader>ca', ':CodeCompanionActions<cr>', desc = 'codecompanion [a]ctions' },
+
+    -- d-group
     { '<leader>d', group = '[d]ebug' },
     { '<leader>dt', group = '[t]est' },
-    { '<leader>e', group = '[e]dit' },
-    { '<leader>e', group = '[t]mux' },
-    { '<leader>fd', [[eval "$(tmux showenv -s DISPLAY)"]], desc = '[d]isplay fix' },
+
+    -- f-group
     { '<leader>f', group = '[f]ind (telescope)' },
     { '<leader>f<space>', '<cmd>Telescope buffers<cr>', desc = '[ ] buffers' },
     { '<leader>fM', '<cmd>Telescope man_pages<cr>', desc = '[M]an pages' },
@@ -310,6 +314,8 @@ wk.add({
     { '<leader>fl', '<cmd>Telescope loclist<cr>', desc = '[l]oclist' },
     { '<leader>fm', '<cmd>Telescope marks<cr>', desc = '[m]arks' },
     { '<leader>fq', '<cmd>Telescope quickfix<cr>', desc = '[q]uickfix' },
+
+    -- g-group
     { '<leader>g', group = '[g]it' },
     { '<leader>gb', group = '[b]lame' },
     { '<leader>gbb', ':GitBlameToggle<cr>', desc = '[b]lame toggle virtual text' },
@@ -330,12 +336,18 @@ wk.add({
       ":lua require('telescope').extensions.git_worktree.git_worktrees()<cr>",
       desc = 'worktree switch',
     },
+
+    -- h-group
     { '<leader>h', group = '[h]elp / [h]ide / debug' },
     { '<leader>hc', group = '[c]onceal' },
     { '<leader>hc', toggle_conceal, desc = '[c]onceal toggle' },
     { '<leader>ht', group = '[t]reesitter' },
     { '<leader>htt', vim.treesitter.inspect_tree, desc = 'show [t]ree' },
-    { '<leader>i', group = '[i]mage' },
+
+    -- i-group
+    -- { '<leader>i', group = '[i]mage' },
+
+    -- l-group
     { '<leader>l', group = '[l]anguage/lsp' },
     { '<leader>la', vim.lsp.buf.code_action, desc = 'code [a]ction' },
     { '<leader>ld', group = '[d]iagnostics' },
@@ -349,16 +361,18 @@ wk.add({
     { '<leader>lde', vim.diagnostic.enable, desc = '[e]nable' },
     { '<leader>le', vim.diagnostic.open_float, desc = 'diagnostics (show hover [e]rror)' },
     { '<leader>lg', ':Neogen<cr>', desc = 'neo[g]en docstring' },
+
+    -- o-group
     { '<leader>o', group = '[o]tter & c[o]de' },
     { '<leader>oa', require('otter').activate, desc = 'otter [a]ctivate' },
     { '<leader>ob', insert_bash_chunk, desc = '[b]ash code chunk' },
     { '<leader>oc', 'O# %%<cr>', desc = 'magic [c]omment code chunk # %%' },
     { '<leader>od', require('otter').activate, desc = 'otter [d]eactivate' },
-    { '<leader>oj', insert_julia_chunk, desc = '[j]ulia code chunk' },
     { '<leader>ol', insert_lua_chunk, desc = '[l]lua code chunk' },
     { '<leader>oo', insert_ojs_chunk, desc = '[o]bservable js code chunk' },
     { '<leader>op', insert_py_chunk, desc = '[p]ython code chunk' },
-    { '<leader>or', insert_r_chunk, desc = '[r] code chunk' },
+
+    -- q-group
     { '<leader>q', group = '[q]uarto' },
     {
       '<leader>qE',
@@ -377,7 +391,8 @@ wk.add({
     { '<leader>qra', ':QuartoSendAll<cr>', desc = 'run [a]ll' },
     { '<leader>qrb', ':QuartoSendBelow<cr>', desc = 'run [b]elow' },
     { '<leader>qrr', ':QuartoSendAbove<cr>', desc = 'to cu[r]sor' },
-    { '<leader>r', group = '[r] R specific tools' },
+
+    -- v-group
     { '<leader>v', group = '[v]im' },
     { '<leader>vc', ':Telescope colorscheme<cr>', desc = '[c]olortheme' },
     { '<leader>vh', ':execute "h " . expand("<cword>")<cr>', desc = 'vim [h]elp for current word' },
@@ -385,6 +400,8 @@ wk.add({
     { '<leader>vm', ':Mason<cr>', desc = '[m]ason software installer' },
     { '<leader>vs', ':e $MYVIMRC | :cd %:p:h | split . | wincmd k<cr>', desc = '[s]ettings, edit vimrc' },
     { '<leader>vt', toggle_light_dark_theme, desc = '[t]oggle light/dark theme' },
+
+    -- x-group
     { '<leader>x', group = 'e[x]ecute' },
     { '<leader>xx', ':w<cr>:source %<cr>', desc = '[x] source %' },
   },
