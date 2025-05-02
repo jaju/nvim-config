@@ -1,31 +1,12 @@
+local U = require('config.utils')
 -- required in which-key plugin spec in plugins/ui.lua as `require 'config.keymap'`
 local wk = require 'which-key'
 local ms = vim.lsp.protocol.Methods
 
 P = vim.print
-
-local function map(m, k, v, opts)
-  opts = opts or {}
-  opts.silent = true
-  opts.noremap = true
-  vim.keymap.set(m, k, v, opts)
-end
-
-local nmap = function(key, effect, desc)
-  map('n', key, effect, { silent = true, noremap = true, desc = desc })
-end
-
-local vmap = function(key, effect, desc)
-  map('v', key, effect, { silent = true, noremap = true, desc = desc })
-end
-
-local imap = function(key, effect, desc)
-  map('i', key, effect, { silent = true, noremap = true, desc = desc })
-end
-
-local cmap = function(key, effect, desc)
-  map('c', key, effect, { silent = true, noremap = true, desc = desc })
-end
+local nmap = U.nmap
+local imap = U.imap
+local vmap = U.vmap
 
 local function set_ft_keymaps(filetype, mappings)
   vim.api.nvim_create_autocmd('FileType', {
@@ -210,7 +191,6 @@ wk.add({
   { ']q', ':silent cnext<cr>', desc = '[q]uickfix next' },
   { 'gN', 'Nzzzv', desc = 'center search' },
   { 'gf', ':e <cfile><CR>', desc = 'edit file' },
-  { 'gl', '<c-]>', desc = 'open help link' },
   { 'n', 'nzzzv', desc = 'center search' },
   { 'z?', ':setlocal spell!<cr>', desc = 'toggle [z]pellcheck' },
   { 'zl', ':Telescope spell_suggest<cr>', desc = '[l]ist spelling suggestions' },
