@@ -20,8 +20,9 @@ return {
   },
 
   {
-    'epwalsh/obsidian.nvim',
+    'obsidian-nvim/obsidian.nvim',
     enabled = true,
+    lazy = false,
     -- lazy = false,
     ft = 'markdown',
     dependencies = {
@@ -43,6 +44,7 @@ return {
       ---@diagnostic disable-next-line: missing-fields
       require('obsidian').setup {
         ui = {
+          checkboxes = { [' '] = {}, ['x'] = {} },
           enable = false,
         },
         completion = {

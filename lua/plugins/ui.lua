@@ -391,32 +391,37 @@ return {
   },
 
   { -- highlight markdown headings and code blocks etc.
-    'lukas-reineke/headlines.nvim',
-    enabled = false,
-    dependencies = 'nvim-treesitter/nvim-treesitter',
-    config = function()
-      require('headlines').setup {
-        quarto = {
-          query = vim.treesitter.query.parse(
-            'markdown',
-            [[
-                (fenced_code_block) @codeblock
-                ]]
-          ),
-          codeblock_highlight = 'CodeBlock',
-          treesitter_language = 'markdown',
-        },
-        markdown = {
-          query = vim.treesitter.query.parse(
-            'markdown',
-            [[
-                (fenced_code_block) @codeblock
-                ]]
-          ),
-          codeblock_highlight = 'CodeBlock',
-        },
-      }
-    end,
+     'MeanderingProgrammer/render-markdown.nvim',
+    enabled = true,
+    -- ft = {'quarto', 'markdown'},
+    ft = { 'markdown'},
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = {
+      render_modes = { 'n', 'c', 't' },
+      completions = {
+        lsp = { enabled = false },
+      },
+      heading = {
+        enabled = false,
+      },
+      paragraph = {
+        enabled = false,
+      },
+      code = {
+        enabled = true,
+        style = 'full',
+        border = 'thin',
+        sign = false,
+        render_modes = { 'i', 'v', 'V' }
+      },
+      signs = {
+        enabled = false,
+      },
+    },
   },
 
   { -- show images in nvim!

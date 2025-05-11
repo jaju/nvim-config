@@ -1,4 +1,9 @@
 return {
+  { 'webhooked/oscura.nvim', enabled = true, lazy = false, priority = 1000, opts = {} },
+  { 'Mofiqul/vscode.nvim', enabled = true, lazy = false, priority = 1000, opts = {} },
+  { 'slugbyte/lackluster.nvim', enabled = true, lazy = false, priority = 1000, opts = {} },
+  { 'projekt0n/github-nvim-theme', enabled = true, lazy = false, priority = 1000 } ,
+  { 'forest-nvim/sequoia.nvim', enabled = false, lazy = false, priority = 1000 },
   { 'shaunsingh/nord.nvim', enabled = false, lazy = false, priority = 1000 },
   { 'folke/tokyonight.nvim', enabled = false, lazy = false, priority = 1000 },
   { 'EdenEast/nightfox.nvim', enabled = false, lazy = false, priority = 1000 },
