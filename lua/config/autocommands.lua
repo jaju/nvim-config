@@ -31,3 +31,15 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     vim.highlight.on_yank()
   end,
 })
+
+vim.api.nvim_create_autocmd('BufReadCmd', {
+  desc = 'Open sound files via an external program.',
+  pattern = { '*.wav' },
+  callback = function()
+    local filename = vim.fn.shellescape(vim.api.nvim_buf_get_name(0))
+    local cmd = 'silent !open ' .. filename .. ' &'
+    vim.cmd(cmd)
+    vim.cmd("let tobedeleted = bufnr('%') | b# | exe \"bd! \" . tobedeleted")
+    -- vim.fn.system(cmd)
+  end,
+})

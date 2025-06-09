@@ -41,6 +41,7 @@ return {
     dependencies = {
       { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
       { 'nvim-telescope/telescope-dap.nvim' },
+      { 'nvim-telescope/telescope-ui-select.nvim' },
       {
         'jmbuhr/telescope-zotero.nvim',
         dev = false,
@@ -156,10 +157,16 @@ return {
             override_file_sorter = true, -- override the file sorter
             case_mode = 'smart_case', -- or "ignore_case" or "respect_case"
           },
+          ['ui-select'] = {
+            require('telescope.themes').get_dropdown {
+              -- even more opts
+            },
+          },
         },
       }
       telescope.load_extension 'fzf'
       telescope.load_extension 'dap'
+      telescope.load_extension 'ui-select'
       telescope.load_extension 'zotero'
     end,
   },

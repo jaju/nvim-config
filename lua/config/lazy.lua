@@ -17,10 +17,6 @@ require('lazy').setup('plugins', {
   defaults = {
     version = false,
   },
-  dev = {
-    path = '~/projects',
-    fallback = true,
-  },
   install = {
     missing = true,
     colorscheme = { 'nightly' },

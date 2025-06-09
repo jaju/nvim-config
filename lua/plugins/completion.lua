@@ -26,7 +26,7 @@ return {
       },
       {
         'jmbuhr/cmp-pandoc-references',
-        dev = true,
+        dev = false,
         ft = { 'quarto', 'markdown', 'rmarkdown' },
       },
       { 'kdheepak/cmp-latex-symbols' },
@@ -170,15 +170,15 @@ return {
         strategies = {
           chat = {
             -- adapter = "ollama",
-            adapter = 'copilot',
+            adapter = 'ollama',
           },
           inline = {
             -- adapter = "ollama",
-            adapter = 'copilot',
+            adapter = 'ollama',
           },
           agent = {
             -- adapter = "ollama",
-            adapter = 'copilot',
+            adapter = 'ollama',
           },
         },
       }
@@ -187,6 +187,7 @@ return {
 
   { 
     'github/copilot.vim',
+    enabled = false,
   }, 
   --
   -- {

@@ -2,7 +2,7 @@ return {
 
   { -- for lsp features in code cells / embedded code
     'jmbuhr/otter.nvim',
-    dev = true,
+    dev = false,
     dependencies = {
       {
         'neovim/nvim-lspconfig',
@@ -51,6 +51,7 @@ return {
           'css-lsp',
           'html-lsp',
           'json-lsp',
+          'kotlin',
           'pyright',
           'texlab',
           'dotls',
@@ -184,6 +185,12 @@ return {
       lspconfig.jsonls.setup {
         capabilities = capabilities,
         flags = lsp_flags,
+      }
+
+      lspconfig.kotlin_lsp.setup {
+        capabilities = capabilities,
+        flags = lsp_flags,
+        root_dir = util.root_pattern('build.gradle.kts', 'settings.gradle.kts', 'pom.xml', 'build.gradle'),
       }
 
       lspconfig.texlab.setup {
