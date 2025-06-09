@@ -334,6 +334,8 @@ return {
           return util.root_pattern('.git', 'setup.py', 'setup.cfg', 'pyproject.toml', 'requirements.txt')(fname)
         end,
       }
+
+      lspconfig.tailwindcss.setup {}
     end,
   },
 }
